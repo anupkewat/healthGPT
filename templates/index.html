@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demonstration of ChatGPT API in a Python Flask Application. A Skolo Online course.">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+  <title>health gpt</title>
+  <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+<body>
+  <header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">HealthGPT</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Begin page content -->
+  <main class="flex-shrink-0">
+    <div class="container">
+      <br>
+      <br>
+      <h1 class="mt-5">healthGPT </h1>
+      <p class="lead">
+        Welcome to healthGPT. Please enter your symptoms.
+      </p>
+      <div id="list-group" class="list-group w-auto"  >
+      </div>
+      <div class="input-group mb-3">
+
+        <select id="dropdown1" class="form-control" >
+          <option value="">Select health condition</option>
+          <option value="Cold">Cold </option>
+          <option value="Cough">Cough </option>
+          <option value="Fever">Fever</option>
+        </select>
+
+        <select id="dropdown2" class="form-control" >
+          <option value="">Select severity</option>
+          <option value="minor">Minor </option>
+          <option value="moderate">Moderate </option>
+          <option value="major">Major</option>
+          <option value="extreme">Extreme</option>
+        </select>
+
+        <div class="input-group-append">
+          <button id="gpt-button" class="btn btn-primary">Ask HealthGPT</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script>
+    $("#gpt-button").click(function() {
+      var selectedOption1 = $("#dropdown1").val();
+      var selectedOption2 = $("#dropdown2").val();
+
+      let html_data = '';
+      html_data = `
+        <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
+          <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+          <div class="d-flex gap-2 w-100 justify-content-between">
+            <div>
+              <p class="mb-0 opacity-75"> ${selectedOption1} with ${selectedOption2} severity. </p>
+            </div>
+          </div>
+        </a>
+      `;
+      if (selectedOption1 !== "" && selectedOption2!== "") {
+        $("#list-group").append(html_data);
+      }
+
+      // ajax -> POST
+      $.ajax({
+        url: "/",
+        type: "POST",
+        data: { healthCondition: selectedOption1, severity:selectedOption2  },
+        success: function(data) {
+        
+        let answer= data.answer
+          
+        let gpt_data = '';
+        gpt_data = `
+          <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3">
+            <img src="https://static.vecteezy.com/system/resources/previews/021/608/790/original/chatgpt-logo-chat-gpt-icon-on-black-background-free-vector.jpg" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+            <div class="d-flex gap-2 w-100 justify-content-between">
+              <div>
+                <p class="mb-0 opacity-75"> ${answer}</p>
+              </div>
+            </div>
+          </a>
+        `;
+        $("#list-group").append(gpt_data);
+
+        if(data){console.log("responded succesfully");}
+
+        }
+      });
+      // reset
+      $("#dropdown1").val("");
+      $("#dropdown2").val("");
+    });
+  </script>
+   
+
+  </body>
+</html>

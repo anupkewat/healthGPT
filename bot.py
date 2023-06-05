@@ -1,39 +1,28 @@
 import openai
 
-# messages = [ 
-#     { "role" : "system" , "content" : "You are a medical assistant."}
-# ]
-# def send_message(message):
-#     messages.append( 
-#         {"role" : "user", "content" : message},
-#     )
-#     response = openai.Completion.create(
-#         engine='gpt-3.5-turbo', prompt = message
-#     )
+openai.api_key = open("key.txt","r").read().strip('\n')
 
-#     reply = response.choices[0].message.content
-#     return reply
+def askGPT(prompt):
+    print("asked prompt : ", prompt)
+    chat = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": f'{prompt}'}            
+        ]
+    )
 
-# user_input = input("You: ")
-# bot_response = send_message(user_input)
-# print("GPT:", bot_response)
+    try:
+        answer= chat.choices[0].message.content.replace('\n' , '<br>')
+    except:
+        answer= "Cannot find results,try again later."
+    
+    return answer
 
-openai.api_key = open("key.txt","r").read().strip('/n')
+# prompt = "say 1"
 
-chat = openai.ChatCompletion.create(
-  model="gpt-3.5-turbo",
-  messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "i have severe symptoms of cold, suggest actions"}
-        
-    ]
-)
-reply = chat.choices[0].message.content
-print ( f' response : {reply}')
+# reply = askGPT(prompt)
+
+# print ( f' response : {reply}')
 
 
-# response = openai.Completion.create(
-#   model="text-davinci-003",
-#   prompt="Write a tagline for an ice cream shop."
-# )
-# print(response)
