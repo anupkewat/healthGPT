@@ -1,6 +1,5 @@
 from flask import Flask, render_template, jsonify, request
 import openai
-# import time
 import bot
 
 def page_not_found(e):
@@ -15,15 +14,23 @@ def index():
 
         data = [request.form['healthCondition'] , request.form['severity']]
 
-        prompt = f'provide treatment options for {data[0]} with  {data[1]} severity.'
+        if data[0] == "" or data[1] == "":
+            res = {'response' : 'Bad request' , 'valid' : 'false'}
+            return jsonify(res), 400
+        
+        upper_limit  = 100
+        prompt = f'provide treatment options for {data[0]} with  {data[1]} severity in {upper_limit} words.'
 
         res= {}
         use_api = False
-        res['answer'] = 'API not in use.'
+        res['response'] = 'API not in use.'
+        res['valid'] = 'true'
+
         if use_api:
-            res['answer'] = bot.askGPT(prompt)
+            res['response'] = bot.askGPT(prompt)
+            res['valid'] = 'true'
         print(res)
-        # time.sleep(3)
+
         return jsonify(res), 200
 
     return render_template('index.html', **locals())

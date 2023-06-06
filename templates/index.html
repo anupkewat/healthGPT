@@ -58,7 +58,7 @@
         </select>
 
         <div class="input-group-append">
-          <button id="gpt-button" class="btn btn-primary">Ask HealthGPT</button>
+          <button id="gpt-button" class="btn btn-primary" color = "#097d14">Ask HealthGPT</button>
         </div>
       </div>
     </div>
@@ -67,6 +67,13 @@
   <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   <script>
+
+function speak() {
+        var textInput = $(event.target).closest('.list-group-item').find('.mb-0.opacity-75').text().trim();
+        var utterance = new SpeechSynthesisUtterance(textInput);
+        window.speechSynthesis.speak(utterance);
+    }
+    
     $("#gpt-button").click(function() {
       var selectedOption1 = $("#dropdown1").val();
       var selectedOption2 = $("#dropdown2").val();
@@ -86,14 +93,17 @@
         $("#list-group").append(html_data);
       }
 
-      // ajax -> POST
+      // ajax -> POST to fetch API response
       $.ajax({
         url: "/",
         type: "POST",
         data: { healthCondition: selectedOption1, severity:selectedOption2  },
         success: function(data) {
+
         
-        let answer= data.answer
+        if ( selectedOption1 !== "" || selectedOption2 !== "")
+        {let answer= data.response;
+        
           
         let gpt_data = '';
         gpt_data = `
@@ -101,14 +111,17 @@
             <img src="https://static.vecteezy.com/system/resources/previews/021/608/790/original/chatgpt-logo-chat-gpt-icon-on-black-background-free-vector.jpg" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
             <div class="d-flex gap-2 w-100 justify-content-between">
               <div>
-                <p class="mb-0 opacity-75"> ${answer}</p>
+                <p class="mb-0 opacity-75" id= 'text-input'> ${answer}</p>
               </div>
+              <button onclick="speak()" class="btn btn-primary" style="align-self: flex-end;">Speak</button>
             </div>
           </a>
-        `;
+        `        ;
+
         $("#list-group").append(gpt_data);
 
         if(data){console.log("responded succesfully");}
+        }
 
         }
       });
@@ -117,6 +130,8 @@
       $("#dropdown2").val("");
     });
   </script>
+
+
    
 
   </body>
