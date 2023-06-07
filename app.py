@@ -1,5 +1,4 @@
 from flask import Flask, render_template, jsonify, request
-import openai
 import bot
 
 def page_not_found(e):
@@ -22,7 +21,7 @@ def index():
         prompt = f'provide treatment options for {data[0]} with  {data[1]} severity in {upper_limit} words.'
 
         res= {}
-        use_api = False
+        use_api = True
         res['response'] = 'API not in use.'
         res['valid'] = 'true'
 
